@@ -1,5 +1,6 @@
-#!/usr/bin/python
-import psycopg2
+#!/usr/bin/python3
+
+import psycopg
 from config import config
 
 def connect():
@@ -8,29 +9,26 @@ def connect():
     try:
         # read connection parameters
         params = config()
-
-        # connect to the PostgreSQL server
-        print('Connecting to the PostgreSQL database...')
-        conn = psycopg2.connect(**params)
-		
-        # create a cursor
-        cur = conn.cursor()
         
-	# execute a statement
-        print('PostgreSQL database version:')
-        cur.execute('SELECT version()')
+        with psycopg.connect(**params) as conn:
+
+    # Open a cursor to perform database operations
+            with conn.cursor() as cur:
+
+        # Execute a command: this creates a new table
+                cur.execute("""
+                    DELETE FROM requests_requests  
+                    WHERE to_timestamp(time) > NOW() - INTERVAL "30 days";
+                    """)
 
         # display the PostgreSQL database server version
-        db_version = cur.fetchone()
-        print(db_version)
        
 	# close the communication with the PostgreSQL
-        cur.close()
-    except (Exception, psycopg2.DatabaseError) as error:
+    except (Exception, psycopg .DatabaseError) as error:
         print(error)
     finally:
         if conn is not None:
-            conn.close()
+            conn.commit()
             print('Database connection closed.')
 
 
