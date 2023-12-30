@@ -1,21 +1,23 @@
 #!/usr/bin/python3
 
-import psycopg
-from config import config
+import psycopg2 as psycopg
+from dotenv import load_dotenv
+import os
+load_dotenv()
 
 def connect():
     """ Connect to the PostgreSQL database server """
     conn = None
     try:
         # read connection parameters
-        params = config()
         
-        with psycopg.connect(**params) as conn:
+        with psycopg.connect(conninfo=os.getenv("CONNECTION_STRING")) as conn:
 
     # Open a cursor to perform database operations
             with conn.cursor() as cur:
 
         # Execute a command: this creates a new table
+                print("Clearing Old Requests...")
                 cur.execute("""
                     DELETE FROM requests_requests  
                     WHERE to_timestamp(time) > NOW() - INTERVAL "30 days";
