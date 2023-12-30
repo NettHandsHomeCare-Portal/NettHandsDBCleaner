@@ -2,7 +2,7 @@
 
 import psycopg2 as psycopg
 from dotenv import load_dotenv
-import os'
+import os
 import queries
 load_dotenv()
 
